@@ -8,6 +8,7 @@ import { MarkdownRenderer } from './components/MarkdownRenderer';
 import { ChatInterface } from './components/ChatInterface';
 import { AdminLogin } from './components/AdminLogin';
 import { ScriptEditor } from './components/ScriptEditor';
+import { FileUploader } from './components/FileUploader';
 import { Terminal, Youtube, FileText, ArrowLeft, ExternalLink, Sparkles, ShieldAlert, Cpu } from './components/Icons';
 
 function App() {
@@ -92,6 +93,10 @@ function App() {
     setView('SCRIPT_EDITOR');
   };
 
+  const handleFilesUploaded = (newScripts: Script[]) => {
+    setScripts(prev => [...newScripts, ...prev]);
+  };
+
   return (
     <div className="min-h-screen relative flex flex-col font-sans">
       {/* Background Grid - Static */}
@@ -161,6 +166,17 @@ function App() {
                   </CyberButton>
                  </a>
               </div>
+            </section>
+
+            {/* File Upload Section */}
+            <section className="bg-cyber-panel border border-gray-800 p-6 rounded-lg">
+              <div className="flex items-center gap-2 mb-6">
+                <FileText className="text-cyber-pink" />
+                <h3 className="text-xl font-bold text-white tracking-widest font-mono">
+                  {lang === 'zh' ? '上传 Markdown 文档' : 'Upload Markdown Documents'}
+                </h3>
+              </div>
+              <FileUploader onFilesUploaded={handleFilesUploaded} lang={lang} />
             </section>
 
             {/* Script Grid */}
