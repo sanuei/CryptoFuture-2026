@@ -1,8 +1,8 @@
 import { GoogleGenAI, Chat } from "@google/genai";
 
 // Initialize the API client
-// Note: process.env.API_KEY is expected to be available in the environment
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Note: import.meta.env.VITE_GEMINI_API_KEY is expected to be available in the environment
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY || '' });
 
 /**
  * Creates a chat session context-aware of the specific script.

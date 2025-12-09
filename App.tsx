@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ViewState, Script, Language } from './types';
 import { scripts as initialScripts } from './data/mockScripts';
 import { translations } from './utils/translations';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Sparkles, Cpu } from './Icons';
+import { Send, Cpu } from './Icons';
 import { ChatMessage, Script } from '../types';
 import { createScriptAnalysisChat, sendMessageStream } from '../services/geminiService';
 import { Chat, GenerateContentResponse } from "@google/genai";
