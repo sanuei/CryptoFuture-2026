@@ -223,10 +223,10 @@ function App() {
         )}
 
         {view === 'SCRIPT_DETAIL' && selectedScript && (
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 animate-fadeIn h-[calc(100vh-140px)]">
+          <div className={`grid gap-8 animate-fadeIn h-[calc(100vh-140px)] ${isChatOpen ? 'grid-cols-1 lg:grid-cols-[1fr_400px]' : 'grid-cols-1'}`}>
             
             {/* Script Viewer */}
-            <div className="relative bg-cyber-panel border border-gray-800 flex flex-col h-full overflow-hidden shadow-2xl">
+            <div className={`relative bg-cyber-panel border border-gray-800 flex flex-col h-full overflow-hidden shadow-2xl ${!isChatOpen ? 'max-w-5xl mx-auto w-full' : ''}`}>
               {/* Toolbar */}
               <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-cyber-dark">
                 <button 
@@ -249,10 +249,10 @@ function App() {
               </div>
 
               {/* Content Scroll Area */}
-              <div className="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar">
-                <div className="max-w-3xl mx-auto">
-                  <div className="mb-8 border-b border-gray-800 pb-8">
-                    <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">{selectedScript.title}</h1>
+              <div className="flex-1 overflow-y-auto p-6 md:p-8 lg:p-12 custom-scrollbar bg-cyber-black/30">
+                <div className="max-w-4xl mx-auto">
+                  <div className="mb-10 border-b border-gray-700 pb-6">
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-5 leading-tight font-sans">{selectedScript.title}</h1>
                     <div className="flex flex-wrap gap-4 text-sm font-mono text-gray-400">
                       <span className="text-cyber-cyan">{t.date}: {selectedScript.date}</span>
                       <span>//</span>
@@ -261,7 +261,9 @@ function App() {
                       </span>
                     </div>
                   </div>
-                  <MarkdownRenderer content={selectedScript.content} />
+                  <div className="article-content">
+                    <MarkdownRenderer content={selectedScript.content} />
+                  </div>
                   
                   {/* Footer of script */}
                   <div className="mt-16 pt-8 border-t border-dashed border-gray-800 text-center">

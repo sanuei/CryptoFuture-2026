@@ -8,23 +8,23 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
   const lines = content.split('\n');
   
   return (
-    <div className="space-y-4 font-mono text-gray-300">
+    <div className="space-y-6 text-gray-200 prose prose-invert max-w-none">
       {lines.map((line, index) => {
         // Headers
         if (line.startsWith('# ')) {
-          return <h1 key={index} className="text-3xl font-sans font-bold text-cyber-cyan mt-6 mb-4 border-b border-cyber-cyan/30 pb-2">{line.replace('# ', '')}</h1>;
+          return <h1 key={index} className="text-4xl md:text-5xl font-sans font-bold text-cyber-cyan mt-10 mb-6 border-b border-cyber-cyan/30 pb-3 leading-tight">{line.replace('# ', '')}</h1>;
         }
         if (line.startsWith('## ')) {
-          return <h2 key={index} className="text-2xl font-sans font-bold text-cyber-pink mt-5 mb-3">{line.replace('## ', '')}</h2>;
+          return <h2 key={index} className="text-3xl md:text-4xl font-sans font-bold text-cyber-pink mt-8 mb-5 leading-tight">{line.replace('## ', '')}</h2>;
         }
         if (line.startsWith('### ')) {
-          return <h3 key={index} className="text-xl font-bold text-white mt-4">{line.replace('### ', '')}</h3>;
+          return <h3 key={index} className="text-2xl md:text-3xl font-sans font-bold text-white mt-6 mb-4 leading-tight">{line.replace('### ', '')}</h3>;
         }
         
         // Blockquotes
         if (line.startsWith('> ')) {
           return (
-            <blockquote key={index} className="border-l-4 border-cyber-yellow pl-4 italic text-cyber-yellow bg-cyber-yellow/10 p-2 my-4">
+            <blockquote key={index} className="border-l-4 border-cyber-yellow pl-6 pr-4 py-4 italic text-cyber-yellow/90 bg-cyber-yellow/10 my-6 rounded-r text-lg leading-relaxed">
               {line.replace('> ', '')}
             </blockquote>
           );
@@ -32,16 +32,28 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         
         // Lists
         if (line.trim().startsWith('* ') || line.trim().startsWith('- ')) {
+          const listContent = line.replace(/^[\*\-] /, '');
           return (
-            <div key={index} className="flex items-start gap-2 ml-4">
-              <span className="text-cyber-cyan mt-1">►</span>
-              <span>{line.replace(/^[\*\-] /, '')}</span>
+            <div key={index} className="flex items-start gap-3 ml-2 my-2">
+              <span className="text-cyber-cyan mt-2 text-lg flex-shrink-0">•</span>
+              <span className="text-base md:text-lg leading-relaxed flex-1">{listContent}</span>
+            </div>
+          );
+        }
+
+        // Numbered lists
+        const numberedMatch = line.trim().match(/^(\d+)\.\s(.+)$/);
+        if (numberedMatch) {
+          return (
+            <div key={index} className="flex items-start gap-3 ml-2 my-2">
+              <span className="text-cyber-cyan mt-2 text-lg flex-shrink-0 font-mono">{numberedMatch[1]}.</span>
+              <span className="text-base md:text-lg leading-relaxed flex-1">{numberedMatch[2]}</span>
             </div>
           );
         }
 
         // Empty lines
-        if (line.trim() === '') return <br key={index} />;
+        if (line.trim() === '') return <div key={index} className="h-2" />;
 
         // Paragraphs with basic bold parsing
         const parseBold = (text: string) => {
@@ -54,7 +66,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
           });
         };
 
-        return <p key={index} className="leading-relaxed opacity-90">{parseBold(line)}</p>;
+        return <p key={index} className="text-base md:text-lg leading-relaxed mb-4 text-gray-200">{parseBold(line)}</p>;
       })}
     </div>
   );

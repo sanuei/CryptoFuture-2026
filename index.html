@@ -83,6 +83,60 @@
       .animate-glitch {
         animation: glitch-anim 0.3s infinite;
       }
+
+      /* Article reading optimizations */
+      .article-content {
+        line-height: 1.8;
+        color: #e5e7eb;
+      }
+
+      .article-content p {
+        margin-bottom: 1.25rem;
+        text-align: justify;
+        hyphens: auto;
+      }
+
+      .article-content h1,
+      .article-content h2,
+      .article-content h3 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      .article-content ul,
+      .article-content ol {
+        margin: 1.5rem 0;
+        padding-left: 0;
+      }
+
+      .article-content blockquote {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        border-radius: 4px;
+      }
+
+      /* Improve readability on mobile */
+      @media (max-width: 768px) {
+        .article-content {
+          font-size: 16px;
+          line-height: 1.75;
+        }
+      }
+
+      /* Custom scrollbar for article area */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 10px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(17, 17, 26, 0.5);
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(0, 243, 255, 0.3);
+        border-radius: 5px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 243, 255, 0.5);
+      }
     </style>
   <script type="importmap">
 {
