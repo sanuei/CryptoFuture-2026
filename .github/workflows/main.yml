@@ -29,7 +29,16 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci
+        run: |
+          # npm ci requires a lockfile (package-lock.json, npm-shrinkwrap.json, or yarn.lock).
+          # If no lockfile exists, fall back to npm install so the workflow doesn't fail.
+          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ] || [ -f yarn.lock ]; then
+            echo "Lockfile found, running npm ci"
+            npm ci
+          else
+            echo "No lockfile found, running npm install instead of npm ci"
+            npm install
+          fi
 
       - name: Build
         run: npm run build
