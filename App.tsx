@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { ViewState, Script, Language } from './types';
 import { scripts as initialScripts } from './data/mockScripts';
 import { translations } from './utils/translations';
+import { loadMarkdownScripts } from './services/markdownLoader';
 import { GlitchText } from './components/GlitchText';
 import { CyberButton } from './components/CyberButton';
 import { MarkdownRenderer } from './components/MarkdownRenderer';
 import { ChatInterface } from './components/ChatInterface';
 import { AdminLogin } from './components/AdminLogin';
 import { ScriptEditor } from './components/ScriptEditor';
-import { FileUploader } from './components/FileUploader';
 import { Terminal, Youtube, FileText, ArrowLeft, ExternalLink, Sparkles, ShieldAlert, Cpu } from './components/Icons';
 
 function App() {
@@ -19,16 +19,49 @@ function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Load scripts from local storage if available on mount
+  // Load scripts from markdown files and local storage on mount
   useEffect(() => {
-    const savedScripts = localStorage.getItem('cryptoFutureScripts');
-    if (savedScripts) {
+    const loadAllScripts = async () => {
       try {
-        setScripts(JSON.parse(savedScripts));
-      } catch (e) {
-        console.error("Failed to load scripts", e);
+        // 首先加载 newdata 文件夹中的 markdown 文件
+        const markdownScripts = await loadMarkdownScripts();
+        console.log('已加载 Markdown 文件:', markdownScripts.length, '个');
+        
+        // 合并初始脚本和 markdown 脚本
+        let allScripts = [...initialScripts, ...markdownScripts];
+        
+        // 然后尝试从 localStorage 加载用户保存的脚本
+        const savedScripts = localStorage.getItem('cryptoFutureScripts');
+        if (savedScripts) {
+          try {
+            const parsedScripts = JSON.parse(savedScripts);
+            // 合并所有脚本，避免重复（基于 ID）
+            const existingIds = new Set(allScripts.map(s => s.id));
+            const newScripts = parsedScripts.filter((s: Script) => !existingIds.has(s.id));
+            allScripts = [...allScripts, ...newScripts];
+          } catch (e) {
+            console.error("解析 localStorage 脚本失败", e);
+          }
+        }
+        
+        setScripts(allScripts);
+      } catch (error) {
+        console.error("加载脚本失败:", error);
+        // 如果加载失败，至少使用初始脚本
+        const savedScripts = localStorage.getItem('cryptoFutureScripts');
+        if (savedScripts) {
+          try {
+            setScripts(JSON.parse(savedScripts));
+          } catch (e) {
+            setScripts(initialScripts);
+          }
+        } else {
+          setScripts(initialScripts);
+        }
       }
-    }
+    };
+    
+    loadAllScripts();
   }, []);
 
   // Save scripts to local storage whenever they change
@@ -91,10 +124,6 @@ function App() {
   const handleCreateScript = () => {
     setSelectedScript(null);
     setView('SCRIPT_EDITOR');
-  };
-
-  const handleFilesUploaded = (newScripts: Script[]) => {
-    setScripts(prev => [...newScripts, ...prev]);
   };
 
   return (
@@ -166,17 +195,6 @@ function App() {
                   </CyberButton>
                  </a>
               </div>
-            </section>
-
-            {/* File Upload Section */}
-            <section className="bg-cyber-panel border border-gray-800 p-6 rounded-lg">
-              <div className="flex items-center gap-2 mb-6">
-                <FileText className="text-cyber-pink" />
-                <h3 className="text-xl font-bold text-white tracking-widest font-mono">
-                  {lang === 'zh' ? '上传 Markdown 文档' : 'Upload Markdown Documents'}
-                </h3>
-              </div>
-              <FileUploader onFilesUploaded={handleFilesUploaded} lang={lang} />
             </section>
 
             {/* Script Grid */}
