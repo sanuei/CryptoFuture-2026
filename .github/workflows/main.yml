@@ -1,64 +1,35 @@
-name: Deploy to GitHub Pages
+name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
         with:
-          node-version: "20"
-          cache: 'npm'
+          node-version: ${{ matrix.node-version }}
 
-      - name: Install Dependencies
-        run: |
-          # npm ci requires a lockfile (package-lock.json, npm-shrinkwrap.json, or yarn.lock).
-          # If no lockfile exists, fall back to npm install so the workflow doesn't fail.
-          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ] || [ -f yarn.lock ]; then
-            echo "Lockfile found, running npm ci"
-            npm ci
-          else
-            echo "No lockfile found, running npm install instead of npm ci"
-            npm install
-          fi
+      - name: Install dependencies
+        run: npm install
 
       - name: Build
         run: npm run build
-        env:
-          # If your repo is https://github.com/<user>/<repo>, set this to /<repo>/
-          # If it's a custom domain or user page, set to /
-          PUBLIC_URL: /
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./dist # Assuming Vite/Create-React-App outputs to 'dist' or 'build'
+      - name: Run tests
+        run: npm test
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Run lint
+        run: npm run lint
